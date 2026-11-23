@@ -1,0 +1,17 @@
+name: QoP v02 integration
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: integrations/qop_wire
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo build --release
+      - run: cargo test --release -- --nocapture
+      - run: sudo apt-get update && sudo apt-get install -y iverilog yosys
+      - run: iverilog -g2012 -s tb -o /tmp/qop rtl/qop_ingress.sv rtl/tb.sv && vvp /tmp/qop
+      - run: yosys -p 'read_verilog -sv rtl/qop_ingress.sv; synth -top qop_ingress; stat'
