@@ -1,0 +1,14 @@
+name: QoP wire and MMR acceptance
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: integrations/qop_wire
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo build --release
+      - run: cargo test --release -- --nocapture
