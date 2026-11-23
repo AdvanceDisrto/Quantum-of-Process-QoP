@@ -36,3 +36,5 @@ pub fn verify_proof(f:&Frame,p:&Proof,k:&VerifyingKey,policy:&[u8;24],trusted_ro
 }
 pub struct Ledger{pub mmr:Mmr,prev:Hash,end:u64,key:VerifyingKey,policy:[u8;24]}
 impl Ledger{pub fn new(key:VerifyingKey,policy:[u8;24])->Self{Self{mmr:Mmr::default(),prev:GENESIS,end:0,key,policy}}pub fn append(&mut self,f:&Frame)->bool{if !verify(f,&self.key,&self.policy)||num(f,8)!=self.mmr.len() as u64||f[72..104]!=self.prev||num(f,16)<self.end{return false;}self.prev.copy_from_slice(&f[104..136]);self.end=num(f,24);self.mmr.push(leaf(f));true}}
+
+pub mod extension;
